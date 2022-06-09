@@ -2,33 +2,41 @@ import thor from '../../resources/img/thor.jpeg';
 import mjolnir from '../../resources/img/mjolnir.png';
 import './randomChar.scss';
 import { Component } from 'react';
-import { MarvelService } from '../../services/MarvelService';
+import MarvelService from '../../services/MarvelService.js';
 class RandomChar extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			name: '',
-			describe: '',
-			imgUrl: '',
-		};
+		this.updateChar();
 	}
+	state = {
+		char: {},
+	};
+
+	MarvelService = new MarvelService();
+	onCharLoaded = (char) => {
+		this.setState({ char });
+	};
+	updateChar = () => {
+		const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
+		this.MarvelService.getCharacter(id).then(this.onCharLoaded);
+	};
+
 	render() {
+		const {
+			char: { name, descr, thumbnail, homepageUlr, wikiUlr },
+		} = this.state;
 		return (
 			<div className="randomchar">
 				<div className="randomchar__block">
-					<img src={thor} alt="Random character" className="randomchar__img" />
+					<img src={thumbnail} alt="Random character" className="randomchar__img" />
 					<div className="randomchar__info">
-						<p className="randomchar__name">Thor</p>
-						<p className="randomchar__descr">
-							As the Norse God of thunder and lightning, Thor wields one of the greatest weapons
-							ever made, the enchanted hammer Mjolnir. While others have described Thor as an
-							over-muscled, oafish imbecile, he's quite smart and compassionate...
-						</p>
+						<p className="randomchar__name">{name}</p>
+						<p className="randomchar__descr">{descr}</p>
 						<div className="randomchar__btns">
-							<a href="#" className="button button__main">
+							<a href={homepageUlr} className="button button__main">
 								<div className="inner">homepage</div>
 							</a>
-							<a href="#" className="button button__secondary">
+							<a href={wikiUlr} className="button button__secondary">
 								<div className="inner">Wiki</div>
 							</a>
 						</div>
