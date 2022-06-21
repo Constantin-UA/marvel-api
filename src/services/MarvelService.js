@@ -34,6 +34,10 @@ class MarvelService {
 			thumbnail: `${char.thumbnail.path}.${char.thumbnail.extension}`,
 			homepageUlr: char.urls[0].url,
 			wikiUlr: char.urls[1].url,
+			imgNotAvailable:
+				char.thumbnail.path === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available'
+					? true
+					: false,
 		};
 	};
 }

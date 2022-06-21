@@ -7,11 +7,6 @@ import ErrorMessage from '../errorMessage/ErrorMessage.js';
 import MarvelService from '../../services/MarvelService.js';
 
 class RandomChar extends Component {
-	constructor(props) {
-		super(props);
-		this.updateChar();
-	}
-
 	state = {
 		char: {},
 		loading: true,
@@ -19,6 +14,13 @@ class RandomChar extends Component {
 	};
 
 	MarvelService = new MarvelService();
+
+	componentDidMount = () => {
+		this.updateChar();
+		this.timerId = setInterval(this.updateChar, 15000);
+		this.tryIt = document.querySelector('.button__main');
+		this.tryIt.addEventListener('click', this.updateChar);
+	};
 
 	onCharLoaded = (char) => {
 		this.setState({
@@ -36,6 +38,11 @@ class RandomChar extends Component {
 	updateChar = () => {
 		const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
 		this.MarvelService.getCharacter(id).then(this.onCharLoaded).catch(this.onError);
+	};
+
+	componentWillUnmount = () => {
+		clearInterval(this.timerId);
+		this.tryIt.removeEventListener('click', this.updateChar);
 	};
 
 	render() {
@@ -66,14 +73,20 @@ class RandomChar extends Component {
 }
 
 const View = ({ char }) => {
-	const { name, description, thumbnail, homepage, wiki } = char;
-
+	const { name, description, thumbnail, homepage, wiki, imgNotAvailable } = char;
+	let simpleDescription = '';
+	let imgClass = imgNotAvailable ? 'randomchar__img_not' : 'randomchar__img';
+	if (description.length > 150) {
+		simpleDescription = description.slice(0, 150).concat('...');
+	} else {
+		simpleDescription = description;
+	}
 	return (
 		<div className="randomchar__block">
-			<img src={thumbnail} alt="Random character" className="randomchar__img" />
+			<img src={thumbnail} alt="Random character" className={imgClass} />
 			<div className="randomchar__info">
 				<p className="randomchar__name">{name}</p>
-				<p className="randomchar__descr">{description}</p>
+				<p className="randomchar__descr">{simpleDescription}</p>
 				<div className="randomchar__btns">
 					<a href={homepage} className="button button__main">
 						<div className="inner">homepage</div>
