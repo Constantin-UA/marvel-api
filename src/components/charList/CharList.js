@@ -1,4 +1,3 @@
-import abyss from '../../resources/img/abyss.jpg';
 import './charList.scss';
 
 import { Component } from 'react';
@@ -18,18 +17,14 @@ class CharList extends Component {
 	};
 
 	componentDidMount = () => {
-		this.loadChars();
 		console.log('Mount');
+		this.loadChars();
 	};
 
-	onLoadChar(chars) {
-		const char = chars[0];
-		return <View char={char} />;
-	}
-
 	render() {
+		console.log('render');
 		const { chars } = this.state;
-		const content = this.onLoadChar(chars);
+		const content = Array.from(chars).map((char, idx) => <View char={char} key={idx} />);
 		return (
 			<div className="char__list">
 				<ul className="char__grid">{content}</ul>
@@ -43,10 +38,11 @@ class CharList extends Component {
 
 const View = ({ char }) => {
 	if (char) {
-		const { thumbnail, name } = char;
+		const { thumbnail, name, imgNotAvailable } = char;
+		let imgClass = imgNotAvailable ? 'char__item_img_not' : 'char__item_img';
 		return (
 			<li className="char__item">
-				<img src={thumbnail} alt="abyss" />
+				<img src={thumbnail} alt="abyss" className={imgClass} />
 				<div className="char__name">{name}</div>
 			</li>
 		);
