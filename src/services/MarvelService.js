@@ -29,8 +29,8 @@ class MarvelService {
 			name: char.name,
 			description:
 				char.description !== ''
-					? char.description
-					: 'Sorry, no descriptions found for this character.',
+					? `${char.description.slice(0, 210)}...`
+					: 'Sorry, no description found for this character.',
 			thumbnail: `${char.thumbnail.path}.${char.thumbnail.extension}`,
 			homepageUlr: char.urls[0].url,
 			wikiUlr: char.urls[1].url,

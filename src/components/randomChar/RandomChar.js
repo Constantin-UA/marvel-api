@@ -29,11 +29,12 @@ class RandomChar extends Component {
 		});
 	};
 
-	onError = () =>
+	onError = () => {
 		this.setState({
 			loading: false,
 			error: true,
 		});
+	};
 
 	updateChar = () => {
 		const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
@@ -74,19 +75,15 @@ class RandomChar extends Component {
 
 const View = ({ char }) => {
 	const { name, description, thumbnail, homepage, wiki, imgNotAvailable } = char;
-	let simpleDescription = '';
-	let imgClass = imgNotAvailable ? 'randomchar__img_not' : 'randomchar__img';
-	if (description.length > 150) {
-		simpleDescription = description.slice(0, 150).concat('...');
-	} else {
-		simpleDescription = description;
-	}
+
+	let imgStyle = imgNotAvailable ? { objectFit: 'unset' } : { objectFit: 'cover' };
+
 	return (
 		<div className="randomchar__block">
-			<img src={thumbnail} alt="Random character" className={imgClass} />
+			<img src={thumbnail} alt="Random character" className="randomchar__img" style={imgStyle} />
 			<div className="randomchar__info">
 				<p className="randomchar__name">{name}</p>
-				<p className="randomchar__descr">{simpleDescription}</p>
+				<p className="randomchar__descr">{description}</p>
 				<div className="randomchar__btns">
 					<a href={homepage} className="button button__main">
 						<div className="inner">homepage</div>
