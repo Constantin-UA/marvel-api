@@ -26,6 +26,7 @@ class MarvelService {
 
 	_transformCharacter = (char) => {
 		return {
+			id: char.id,
 			name: char.name,
 			description:
 				char.description !== ''
@@ -36,8 +37,9 @@ class MarvelService {
 			wikiUlr: char.urls[1].url,
 			imgNotAvailable:
 				char.thumbnail.path === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available'
-					? true
-					: false,
+					? { objectFit: 'unset' }
+					: { objectFit: 'cover' },
+			comics: char.comics.items.slice(0, 10),
 		};
 	};
 }

@@ -12,11 +12,17 @@ class CharList extends Component {
 	};
 	MarvelService = new MarvelService();
 
-	componentDidMount = () => {
+	componentDidMount() {
 		console.log('Mount');
 		this.MarvelService.getAllCharacters().then(this.onCharListLoaded).catch(this.onError);
+	}
+
+	onCharListLoading = () => {
+		this.setState({ loading: true });
 	};
+
 	onCharListLoaded = (charList) => {
+		this.onCharListLoading();
 		this.setState({ charList, loading: false });
 	};
 
@@ -30,10 +36,9 @@ class CharList extends Component {
 	renderItem(arr) {
 		const test = Array.from(arr);
 		const items = test.map((item) => {
-			let imgStyle = item.imgNotAvailable ? { objectFit: 'unset' } : { objectFit: 'cover' };
 			return (
-				<li className="char__item" key={item.id}>
-					<img src={item.thumbnail} alt={item.name} style={imgStyle} />
+				<li className="char__item" key={item.id} onClick={() => this.props.onCharSelected(item.id)}>
+					<img src={item.thumbnail} alt={item.name} style={item.imgNotAvailable} />
 					<div className="char__name">{item.name}</div>
 				</li>
 			);
@@ -56,7 +61,7 @@ class CharList extends Component {
 				{errorMessage}
 				{spinner}
 				{content}
-				<button className="button button__main button__long">
+				<button className="button button__main button__long" id="loadMore">
 					<div className="inner">load more</div>
 				</button>
 			</div>
