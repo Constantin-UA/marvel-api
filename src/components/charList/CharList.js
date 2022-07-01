@@ -13,7 +13,6 @@ class CharList extends Component {
 	MarvelService = new MarvelService();
 
 	componentDidMount() {
-		console.log('Mount');
 		this.MarvelService.getAllCharacters().then(this.onCharListLoaded).catch(this.onError);
 	}
 
@@ -47,7 +46,6 @@ class CharList extends Component {
 	}
 
 	render() {
-		console.log('render');
 		const { error, loading, charList } = this.state;
 
 		const items = this.renderItem(charList);
