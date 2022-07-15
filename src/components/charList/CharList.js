@@ -1,28 +1,45 @@
 import './charList.scss';
 
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner.js';
 import ErrorMessage from '../errorMessage/ErrorMessage.js';
 import MarvelService from '../../services/MarvelService.js';
 class CharList extends Component {
 	state = {
 		charList: {},
-		loading: true,
 		error: false,
+		loading: true,
+		newItemLoadin: false,
+		offset: 210,
+		charEnded: false,
 	};
 	MarvelService = new MarvelService();
 
 	componentDidMount() {
-		this.MarvelService.getAllCharacters().then(this.onCharListLoaded).catch(this.onError);
+		this.onRequest();
 	}
 
 	onCharListLoading = () => {
+		this.setState({ newItemLoading: true });
+	};
+	onLoading = () => {
 		this.setState({ loading: true });
 	};
 
-	onCharListLoaded = (charList) => {
-		this.onCharListLoading();
-		this.setState({ charList, loading: false });
+	onCharListLoaded = (newCharList) => {
+		let ended = false;
+		if (newCharList.length < 9) {
+			ended = true;
+		}
+
+		this.setState(({ offset, charList }) => ({
+			charList: [...Array.from(charList), ...Array.from(newCharList)],
+			loading: false,
+			newItemLoadin: false,
+			offset: offset + 9,
+			charEnded: ended,
+		}));
 	};
 
 	onError = () => {
@@ -32,9 +49,13 @@ class CharList extends Component {
 		});
 	};
 
+	onRequest = (offset) => {
+		this.MarvelService.getAllCharacters(offset).then(this.onCharListLoaded).catch(this.onError);
+	};
+
 	renderItem(arr) {
-		const test = Array.from(arr);
-		const items = test.map((item) => {
+		const newArr = Array.from(arr);
+		const items = newArr.map((item) => {
 			return (
 				<li className="char__item" key={item.id} onClick={() => this.props.onCharSelected(item.id)}>
 					<img src={item.thumbnail} alt={item.name} style={item.imgNotAvailable} />
@@ -46,7 +67,7 @@ class CharList extends Component {
 	}
 
 	render() {
-		const { error, loading, charList } = this.state;
+		const { newItemLoadin, error, offset, loading, charList, charEnded } = this.state;
 
 		const items = this.renderItem(charList);
 
@@ -59,7 +80,12 @@ class CharList extends Component {
 				{errorMessage}
 				{spinner}
 				{content}
-				<button className="button button__main button__long" id="loadMore">
+				<button
+					className="button button__main button__long"
+					disabled={newItemLoadin}
+					style={{ display: charEnded ? 'none' : 'block' }}
+					onClick={() => this.onRequest(offset)}
+				>
 					<div className="inner">load more</div>
 				</button>
 			</div>
@@ -67,4 +93,7 @@ class CharList extends Component {
 	}
 }
 
+CharList.propTypes = {
+	onCharSelected: PropTypes.func.isRequired,
+};
 export default CharList;

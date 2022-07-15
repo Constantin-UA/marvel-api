@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner.js';
 import ErrorMessage from '../errorMessage/ErrorMessage.js';
 import Skeleton from '../skeleton/Skeleton';
@@ -27,8 +28,14 @@ class CharInfo extends Component {
 		if (!charId) {
 			return;
 		}
+
 		this.onInfoLoading();
+
 		this.MarvelService.getCharacter(charId).then(this.onInfoLoaded).catch(this.onError);
+	};
+
+	onInfoLoaded = (char) => {
+		this.setState({ char, loading: false });
 	};
 
 	onInfoLoading = () => {
@@ -37,10 +44,6 @@ class CharInfo extends Component {
 
 	onError = () => {
 		this.setState({ error: true, loading: false });
-	};
-
-	onInfoLoaded = (char) => {
-		this.setState({ char, loading: false });
 	};
 
 	render() {
@@ -94,5 +97,9 @@ const View = ({ char }) => {
 			</ul>
 		</>
 	);
+};
+
+CharInfo.propTypes = {
+	charId: PropTypes.number,
 };
 export default CharInfo;
