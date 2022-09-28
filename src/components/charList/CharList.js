@@ -7,6 +7,8 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
 import './charList.scss';
 
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
 const CharList = (props) => {
 	const [charList, setCharList] = useState([]);
 	const [newItemLoading, setNewItemLoading] = useState(false);
@@ -39,12 +41,6 @@ const CharList = (props) => {
 	const itemRefs = useRef([]);
 
 	const focusOnItem = (id) => {
-		// Я реализовал вариант чуть сложнее, и с классом и с фокусом
-		// Но в теории можно оставить только фокус, и его в стилях использовать вместо класса
-		// На самом деле, решение с css-классом можно сделать, вынеся персонажа
-		// в отдельный компонент. Но кода будет больше, появится новое состояние
-		// и не факт, что мы выиграем по оптимизации за счет бОльшего кол-ва элементов
-
 		// По возможности, не злоупотребляйте рефами, только в крайних случаях
 		itemRefs.current.forEach((item) => item.classList.remove('char__item_selected'));
 		itemRefs.current[id].classList.add('char__item_selected');
@@ -63,29 +59,34 @@ const CharList = (props) => {
 			}
 
 			return (
-				<li
-					className="char__item"
-					tabIndex={0}
-					ref={(el) => (itemRefs.current[i] = el)}
-					key={nextId()}
-					onClick={() => {
-						props.onCharSelected(item.id);
-						focusOnItem(i);
-					}}
-					onKeyPress={(e) => {
-						if (e.key === ' ' || e.key === 'Enter') {
+				<CSSTransition classNames="char__item" timeout={500} key={nextId()}>
+					<li
+						className="char__item"
+						tabIndex={0}
+						ref={(el) => (itemRefs.current[i] = el)}
+						onClick={() => {
 							props.onCharSelected(item.id);
 							focusOnItem(i);
-						}
-					}}
-				>
-					<img src={item.thumbnail} alt={item.name} style={imgStyle} />
-					<div className="char__name">{item.name}</div>
-				</li>
+						}}
+						onKeyPress={(e) => {
+							if (e.key === ' ' || e.key === 'Enter') {
+								props.onCharSelected(item.id);
+								focusOnItem(i);
+							}
+						}}
+					>
+						<img src={item.thumbnail} alt={item.name} style={imgStyle} />
+						<div className="char__name">{item.name}</div>
+					</li>
+				</CSSTransition>
 			);
 		});
 		// А эта конструкция вынесена для центровки спиннера/ошибки
-		return <ul className="char__grid">{items}</ul>;
+		return (
+			<ul className="char__grid">
+				<TransitionGroup component={null}>{items}</TransitionGroup>
+			</ul>
+		);
 	}
 
 	const items = renderItems(charList);
